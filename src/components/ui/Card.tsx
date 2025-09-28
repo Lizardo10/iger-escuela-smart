@@ -26,7 +26,7 @@ interface CardHeaderProps {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => {
   return (
-    <div className={cn('px-6 py-4 border-b border-gray-100', className)}>
+    <div className={cn('px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100', className)}>
       {children}
     </div>
   );
@@ -39,7 +39,7 @@ interface CardContentProps {
 
 export const CardContent: React.FC<CardContentProps> = ({ children, className }) => {
   return (
-    <div className={cn('p-6', className)}>
+    <div className={cn('p-4 sm:p-6', className)}>
       {children}
     </div>
   );

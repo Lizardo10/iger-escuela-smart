@@ -1,41 +1,70 @@
 import { useState, useEffect } from 'react';
 import { User } from '../types';
+import { apiService } from '../services/apiService';
 
-// Hook simulado para autenticación - en producción conectar con Google OAuth
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simular carga de usuario desde localStorage o API
+    // Cargar usuario desde localStorage
     const savedUser = localStorage.getItem('iger-user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem('iger-token');
+    
+    if (savedUser && token) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error parsing saved user:', error);
+        localStorage.removeItem('iger-user');
+        localStorage.removeItem('iger-token');
+      }
     }
     setLoading(false);
   }, []);
 
-  const login = async (email: string, role: User['role']) => {
-    // Simular login - integrar con Google OAuth
-    const mockUser: User = {
-      id: Math.random().toString(36),
-      name: role === 'estudiante' ? 'María García' : role === 'maestro' ? 'Profesora Ana' : 'Admin Luis',
-      email,
-      role,
-      classroomId: role === 'estudiante' ? 'aula-1a' : undefined,
-      avatar: `avatar-${Math.floor(Math.random() * 6) + 1}`,
-      parentConsent: role === 'estudiante' ? true : undefined,
-      createdAt: new Date().toISOString()
-    };
-    
-    localStorage.setItem('iger-user', JSON.stringify(mockUser));
-    setUser(mockUser);
+  const login = async (email: string, password?: string) => {
+    try {
+      setLoading(true);
+      const response = await apiService.login(email, password);
+      
+      if (response.success) {
+        setUser(response.user);
+        return { success: true, user: response.user };
+      } else {
+        return { success: false, error: response.error };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'Error de conexión' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: any) => {
+    try {
+      setLoading(true);
+      const response = await apiService.register(userData);
+      
+      if (response.data) {
+        return { success: true, user: response.data.user };
+      } else {
+        return { success: false, error: response.error };
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+      return { success: false, error: 'Error de conexión' };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem('iger-user');
+    apiService.logout();
     setUser(null);
   };
 
-  return { user, loading, login, logout };
+  return { user, loading, login, register, logout };
 };

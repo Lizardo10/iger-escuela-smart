@@ -1,8 +1,10 @@
 import React from 'react';
-import { Users, BookOpen, Settings, Shield, BarChart3, Database } from 'lucide-react';
+import { Users, BookOpen, Settings, Shield, BarChart3, Database, TestTube } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { User, Classroom } from '../../types';
+import { APITest } from '../Test/APITest';
+import { LoginDebug } from '../Debug/LoginDebug';
 
 interface AdminDashboardProps {
   user: User;
@@ -18,15 +20,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, classrooms
   const systemHealth = 98; // Porcentaje
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Panel Administrativo 🛡️</h1>
-        <p className="text-purple-100 text-lg">Gestión y configuración del sistema IGER</p>
+      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-4 sm:p-6 text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Panel Administrativo 🛡️</h1>
+        <p className="text-purple-100 text-base sm:text-lg">Gestión y configuración del sistema IGER</p>
       </div>
 
       {/* Estadísticas Principales */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-blue-400 to-blue-500 text-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -240,6 +242,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, classrooms
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Prueba de API */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <TestTube size={24} className="text-blue-600" />
+            <h3 className="text-xl font-semibold">Prueba de API</h3>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-600 mb-4">
+            Verifica que todas las rutas del backend estén funcionando correctamente.
+          </p>
+          <Button 
+            onClick={() => onViewChange('api-test')}
+            className="flex items-center gap-2"
+          >
+            <TestTube size={16} />
+            Ejecutar Pruebas de API
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Debug de Login */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Shield size={24} className="text-red-600" />
+            <h3 className="text-xl font-semibold">Debug de Login</h3>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-600 mb-4">
+            Prueba el sistema de login para verificar que funcione correctamente.
+          </p>
+          <Button 
+            onClick={() => onViewChange('login-debug')}
+            className="flex items-center gap-2"
+          >
+            <Shield size={16} />
+            Probar Login
+          </Button>
         </CardContent>
       </Card>
     </div>

@@ -32,15 +32,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const completedTasks = tasks.filter(t => t.status === 'completed');
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">¡Hola, {user.name}! 👩‍🏫</h1>
-        <p className="text-green-100 text-lg">Panel de control para gestionar tus clases</p>
+      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-4 sm:p-6 text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">¡Hola, {user.name}! 👩‍🏫</h1>
+        <p className="text-green-100 text-base sm:text-lg">Panel de control para gestionar tus clases</p>
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-blue-400 to-blue-500 text-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
