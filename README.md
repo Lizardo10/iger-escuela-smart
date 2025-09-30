@@ -245,16 +245,25 @@ Esto automáticamente:
 - Frontend: http://localhost:4173
 - Backend: http://localhost:3001/api
 
-### 🌐 Despliegue en Vercel y Render
+### 🌐 Despliegue en la Nube
 
-Para desplegar en la nube (Vercel + Render), consulta:
-📖 **[Guía Completa de Despliegue](./DEPLOY.md)**
+**Tienes 2 opciones:**
 
-La guía incluye:
-- Configuración de Vercel (Frontend)
-- Configuración de Render (Backend)
-- Variables de entorno
-- Solución de problemas
+#### 🤖 AUTOMÁTICO - Con Asistente
+```bash
+deploy-wizard.bat
+```
+El asistente te guía en todo el proceso (10-15 min)
+
+#### 📖 MANUAL - Paso a Paso
+Ver: **[MANUAL-PASO-A-PASO.md](./MANUAL-PASO-A-PASO.md)** (25-30 min)
+
+**Resumen rápido:** [RESUMEN-RAPIDO.md](./RESUMEN-RAPIDO.md)
+
+**Más guías:**
+- [EMPEZAR-AQUI.md](./EMPEZAR-AQUI.md) - Inicio rápido
+- [DEPLOY.md](./DEPLOY.md) - Guía completa
+- [SCRIPTS-DESPLIEGUE.md](./SCRIPTS-DESPLIEGUE.md) - Scripts disponibles
 
 ## 📊 Datos de Prueba Incluidos
 

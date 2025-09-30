@@ -11,16 +11,20 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Configuración de CORS
+// Configuración de CORS simplificada
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://localhost:4173'],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 // Middleware
-app.use(helmet());
 app.use(cors(corsOptions));
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
