@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: iger-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install && node scripts/init-database-fixed.js
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://tu-app-frontend.vercel.app
+    healthCheckPath: /api/health
+    autoDeploy: true

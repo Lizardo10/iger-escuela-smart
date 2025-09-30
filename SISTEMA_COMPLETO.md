@@ -222,3 +222,6 @@ cd backend && node scripts/init-database-fixed.js && cd ..
 ¡Disfruta usando tu sistema educativo completo! 🎓✨
 
 
+
+
+

@@ -1,0 +1,14 @@
+backend/
+database/
+node_modules/
+*.log
+*.sqlite
+.env
+.env.local
+.env.production
+scripts/
+*.sh
+*.bat
+INSTRUCCIONES-CONEXION.md
+SISTEMA_COMPLETO.md
+SOLUCION_LOGIN.md

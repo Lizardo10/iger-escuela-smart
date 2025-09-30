@@ -22,4 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
 .env
+.env.local
+.env.production
+backend/.env
+backend/.env.local
+backend/.env.production
+
+# Generated deployment files
+JWT_SECRET.txt
+RENDER_CONFIG.txt
+VERCEL_VAR.txt
+VERCEL_URL.txt
+RENDER_URL.txt
+NEXT-STEPS.txt
+
+# Database
+*.sqlite
+*.db

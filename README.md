@@ -223,23 +223,38 @@ npm run init-db      # Inicializar base de datos
 
 ## 🚀 Despliegue en Producción
 
-### 1. Preparar el Backend
+### ⚡ Inicio Rápido - Producción Local
+
+**Windows:**
 ```bash
-cd backend
-npm install --production
-npm start
+start-production.bat
 ```
 
-### 2. Preparar el Frontend
+**Linux/Mac:**
 ```bash
-npm run build
-# Los archivos se generan en la carpeta dist/
+./start-production.sh
 ```
 
-### 3. Configurar Base de Datos de Producción
-- SQLite funciona igual en producción
-- Copiar archivo `database.sqlite` al servidor
-- No se requiere configuración adicional
+Esto automáticamente:
+- ✅ Instala dependencias
+- ✅ Inicializa la base de datos
+- ✅ Construye el frontend
+- ✅ Inicia backend y frontend en modo producción
+
+**URLs:**
+- Frontend: http://localhost:4173
+- Backend: http://localhost:3001/api
+
+### 🌐 Despliegue en Vercel y Render
+
+Para desplegar en la nube (Vercel + Render), consulta:
+📖 **[Guía Completa de Despliegue](./DEPLOY.md)**
+
+La guía incluye:
+- Configuración de Vercel (Frontend)
+- Configuración de Render (Backend)
+- Variables de entorno
+- Solución de problemas
 
 ## 📊 Datos de Prueba Incluidos
 

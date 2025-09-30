@@ -1,5 +1,6 @@
 // Servicio API para conectar con el backend
-const API_BASE_URL = 'http://localhost:3001/api';
+// La URL del API se obtiene de las variables de entorno de Vite
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 interface ApiResponse<T> {
   data?: T;

@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server-sqlite.js",
     "dev": "nodemon server-sqlite.js",
-    "init-db": "node scripts/init-database.js"
+    "init-db": "node scripts/init-database-fixed.js",
+    "build": "node scripts/init-database-fixed.js",
+    "production": "NODE_ENV=production node server-sqlite.js"
   },
   "dependencies": {
     "express": "^4.18.2",
