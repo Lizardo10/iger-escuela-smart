@@ -11,9 +11,25 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Configuración de CORS simplificada
+// Configuración de CORS para desarrollo y producción
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173', 'http://localhost:4173'];
+
+console.log('🔒 CORS configurado para:', allowedOrigins);
+
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:4173'],
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origin (herramientas como Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('❌ Origen bloqueado:', origin);
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
