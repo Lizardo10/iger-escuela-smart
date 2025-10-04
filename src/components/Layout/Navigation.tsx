@@ -118,14 +118,16 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
 
       {/* Navegación desktop */}
       <nav className="hidden lg:flex bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 text-white h-screen w-72 p-6 shadow-2xl animate-fade-in-left flex-col relative overflow-hidden">
-        <div className="mb-8 text-center animate-fade-in-down">
+        {/* Decoración de fondo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+        <div className="mb-8 text-center animate-fade-in-down relative z-10">
           <div className="logo-float logo-hover">
             <ResponsiveLogo className="justify-center" />
           </div>
         </div>
 
       {/* Información del Usuario Mejorada */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl animate-fade-in-up hover-lift backdrop-blur-sm border border-white/20">
+      <div className="mb-8 p-6 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl animate-fade-in-up hover-lift backdrop-blur-sm border border-white/20 relative z-10">
         <div className="flex items-center space-x-4">
           <Avatar src={`avatar-${user.avatar}`} alt={user.name} size="lg" />
           <div className="flex-1">
@@ -139,7 +141,7 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
       </div>
 
       {/* Menú de Navegación Mejorado */}
-      <div className="space-y-3 mb-8 stagger-animation flex-1">
+      <div className="space-y-3 mb-8 stagger-animation flex-1 relative z-10">
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
@@ -170,15 +172,15 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
       </div>
 
         {/* Botón de Cerrar Sesión Mejorado */}
-        <div className="mt-auto p-4">
-          <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-3 backdrop-blur-sm border border-red-400/30">
+        <div className="mt-auto p-4 relative z-10">
+          <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-3 backdrop-blur-sm border border-red-400/30 shadow-lg">
             <Button
               variant="ghost"
-              className="w-full text-red-100 hover:text-white hover:bg-red-500/30 transition-all duration-300 group"
+              className="w-full text-white hover:text-white hover:bg-red-500 transition-all duration-300 group border border-red-300/50"
               onClick={onLogout}
             >
               <LogOut size={18} className="mr-3 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="font-medium">Cerrar Sesión</span>
+              <span className="font-semibold">Cerrar Sesión</span>
             </Button>
           </div>
         </div>
