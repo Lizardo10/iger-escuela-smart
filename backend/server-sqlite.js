@@ -14,7 +14,13 @@ const PORT = process.env.PORT || 3001;
 // Configuración de CORS para desarrollo y producción
 const allowedOrigins = process.env.CORS_ORIGIN 
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : ['http://localhost:5173', 'http://localhost:4173'];
+  : [
+      'http://localhost:5173', 
+      'http://localhost:4173',
+      'https://igerescuelasmartanalisissistemas2.vercel.app',
+      'https://iger-escuela-smart3-9i4kxdnei-lizardos-projects.vercel.app',
+      'https://iger-escuela-smart.vercel.app'
+    ];
 
 console.log('🔒 CORS configurado para:', allowedOrigins);
 
@@ -23,9 +29,16 @@ const corsOptions = {
     // Permitir peticiones sin origin (herramientas como Postman)
     if (!origin) return callback(null, true);
     
+    // Verificar si el origen está en la lista permitida
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
-    } else {
+    } 
+    // Permitir subdominios de Vercel
+    else if (origin && origin.includes('.vercel.app')) {
+      console.log('✅ Origen Vercel permitido:', origin);
+      callback(null, true);
+    }
+    else {
       console.log('❌ Origen bloqueado:', origin);
       callback(new Error('No permitido por CORS'));
     }
