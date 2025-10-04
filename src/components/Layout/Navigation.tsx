@@ -117,39 +117,53 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
       </div>
 
       {/* Navegación desktop */}
-      <nav className="hidden lg:flex bg-gradient-to-b from-blue-500 to-blue-600 text-white h-screen w-64 p-4 shadow-xl animate-fade-in-left flex-col">
+      <nav className="hidden lg:flex bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 text-white h-screen w-72 p-6 shadow-2xl animate-fade-in-left flex-col relative overflow-hidden">
         <div className="mb-8 text-center animate-fade-in-down">
           <div className="logo-float logo-hover">
             <ResponsiveLogo className="justify-center" />
           </div>
         </div>
 
-      <div className="mb-6 p-4 bg-blue-400/30 rounded-xl animate-fade-in-up hover-lift">
-        <div className="flex items-center space-x-3">
-          <Avatar src={`avatar-${user.avatar}`} alt={user.name} size="md" />
-          <div>
-            <p className="font-semibold">{user.name}</p>
-            <p className="text-blue-100 text-sm capitalize">{user.role}</p>
+      {/* Información del Usuario Mejorada */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl animate-fade-in-up hover-lift backdrop-blur-sm border border-white/20">
+        <div className="flex items-center space-x-4">
+          <Avatar src={`avatar-${user.avatar}`} alt={user.name} size="lg" />
+          <div className="flex-1">
+            <p className="font-bold text-lg">{user.name}</p>
+            <p className="text-blue-100 text-sm capitalize font-medium">{user.role}</p>
+            <div className="mt-2 w-full bg-white/20 rounded-full h-1">
+              <div className="bg-white h-1 rounded-full w-3/4"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-2 mb-8 stagger-animation">
+      {/* Menú de Navegación Mejorado */}
+      <div className="space-y-3 mb-8 stagger-animation flex-1">
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               onClick={() => onViewChange(item.id)}
-              className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-300 text-left hover-lift ${
+              className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all duration-300 text-left hover-lift group ${
                 currentView === item.id 
-                  ? 'bg-white text-blue-600 shadow-lg animate-pulse-hover' 
-                  : 'hover:bg-blue-400/30 text-white hover-scale'
+                  ? 'bg-white text-blue-600 shadow-xl animate-pulse-hover border border-blue-200' 
+                  : 'hover:bg-white/20 text-white hover-scale backdrop-blur-sm'
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <Icon size={20} />
-              <span className="font-medium">{item.label}</span>
+              <div className={`p-2 rounded-xl transition-all duration-300 ${
+                currentView === item.id 
+                  ? 'bg-blue-100' 
+                  : 'bg-white/20 group-hover:bg-white/30'
+              }`}>
+                <Icon size={20} />
+              </div>
+              <span className="font-semibold text-base">{item.label}</span>
+              {currentView === item.id && (
+                <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+              )}
             </button>
           );
         })}
