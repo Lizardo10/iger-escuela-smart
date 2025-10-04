@@ -6,8 +6,13 @@ import { RegisterForm, RegisterData } from './components/Auth/RegisterForm';
 import { Navigation } from './components/Layout/Navigation';
 import { StudentDashboard } from './components/Student/StudentDashboard';
 import { AITutorChat } from './components/Student/AITutorChat';
+import { LessonsView } from './components/Student/LessonsView';
+import { TasksView } from './components/Student/TasksView';
+import { AchievementsView } from './components/Student/AchievementsView';
 import { TeacherDashboard } from './components/Teacher/TeacherDashboard';
 import { AttendanceSystem } from './components/Teacher/AttendanceSystem';
+import { StudentsView } from './components/Teacher/StudentsView';
+import { CalendarView } from './components/Teacher/CalendarView';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
 import { UserManagement } from './components/Admin/UserManagement';
 import { ClassroomManagement } from './components/Admin/ClassroomManagement';
@@ -15,6 +20,7 @@ import { PaymentSystem } from './components/Admin/PaymentSystem';
 import { ReportsSystem } from './components/Admin/ReportsSystem';
 import { AcademicCalendar } from './components/Admin/AcademicCalendar';
 import { GradeManagement } from './components/Admin/GradeManagement';
+import { SettingsView } from './components/Admin/SettingsView';
 import { APITest } from './components/Test/APITest';
 import { LogoDemo } from './components/Test/LogoDemo';
 import { LoginDebug } from './components/Debug/LoginDebug';
@@ -75,6 +81,12 @@ function App() {
     switch (user.role) {
       case 'estudiante':
         switch (currentView) {
+          case 'lessons':
+            return <LessonsView user={user} lessons={lessons} onViewChange={setCurrentView} />;
+          case 'tasks':
+            return <TasksView user={user} tasks={tasks} onViewChange={setCurrentView} />;
+          case 'achievements':
+            return <AchievementsView user={user} achievements={achievements} onViewChange={setCurrentView} />;
           case 'chat':
             return <AITutorChat user={user} />;
           default:
@@ -91,8 +103,16 @@ function App() {
       
       case 'maestro':
         switch (currentView) {
+          case 'lessons':
+            return <LessonsView user={user} lessons={lessons} onViewChange={setCurrentView} />;
+          case 'students':
+            return <StudentsView user={user} classrooms={classrooms} onViewChange={setCurrentView} />;
           case 'attendance':
             return <AttendanceSystem user={user} classroom={classrooms[0]} currentUser={user} />;
+          case 'calendar':
+            return <CalendarView user={user} classrooms={classrooms} onViewChange={setCurrentView} />;
+          case 'chat':
+            return <AITutorChat user={user} />;
           default:
             return (
               <TeacherDashboard
@@ -121,6 +141,8 @@ function App() {
                 return <AcademicCalendar onEventSelect={(event) => console.log('Evento seleccionado:', event)} />;
               case 'grades':
                 return <GradeManagement onGradeSelect={(grade) => console.log('Grado seleccionado:', grade)} />;
+              case 'settings':
+                return <SettingsView user={user} onViewChange={setCurrentView} />;
               case 'api-test':
                 return <APITest />;
               case 'logo-demo':
