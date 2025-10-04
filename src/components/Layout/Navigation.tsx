@@ -96,18 +96,20 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
                 );
               })}
               
-              {/* Botón de cerrar sesión en móvil */}
-              <div className="pt-4 border-t border-blue-400/30">
-                <button
-                  onClick={() => {
-                    onLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-red-500/30 text-white transition-colors"
-                >
-                  <LogOut size={20} />
-                  <span className="font-medium">Cerrar Sesión</span>
-                </button>
+              {/* Botón de cerrar sesión en móvil mejorado */}
+              <div className="pt-4 border-t border-red-400/30">
+                <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-2 backdrop-blur-sm border border-red-400/30">
+                  <button
+                    onClick={() => {
+                      onLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-red-500/30 text-red-100 hover:text-white transition-all duration-300 group"
+                  >
+                    <LogOut size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+                    <span className="font-medium">Cerrar Sesión</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -153,15 +155,18 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
         })}
       </div>
 
-        <div className="absolute bottom-4 left-4 right-4">
-          <Button
-            variant="ghost"
-            className="w-full text-white border-white hover:bg-white hover:text-blue-600"
-            onClick={onLogout}
-          >
-            <LogOut size={16} className="mr-2" />
-            Cerrar Sesión
-          </Button>
+        {/* Botón de Cerrar Sesión Mejorado */}
+        <div className="mt-auto p-4">
+          <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-3 backdrop-blur-sm border border-red-400/30">
+            <Button
+              variant="ghost"
+              className="w-full text-red-100 hover:text-white hover:bg-red-500/30 transition-all duration-300 group"
+              onClick={onLogout}
+            >
+              <LogOut size={18} className="mr-3 group-hover:rotate-12 transition-transform duration-300" />
+              <span className="font-medium">Cerrar Sesión</span>
+            </Button>
+          </div>
         </div>
       </nav>
     </>
