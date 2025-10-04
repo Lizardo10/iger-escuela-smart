@@ -117,72 +117,60 @@ export const Navigation: React.FC<NavigationProps> = ({ user, currentView, onVie
       </div>
 
       {/* Navegación desktop */}
-      <nav className="hidden lg:flex bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 text-white h-screen w-72 p-6 shadow-2xl animate-fade-in-left flex-col relative overflow-hidden">
-        {/* Decoración de fondo */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
-        <div className="mb-8 text-center animate-fade-in-down relative z-10">
+      <nav className="hidden lg:flex bg-gradient-to-b from-slate-800 via-slate-700 to-slate-900 text-white h-screen w-80 shadow-2xl animate-fade-in-left flex-col relative">
+        {/* Header con Logo */}
+        <div className="p-6 border-b border-white/10">
           <div className="logo-float logo-hover">
             <ResponsiveLogo className="justify-center" />
           </div>
         </div>
 
-      {/* Información del Usuario Mejorada */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl animate-fade-in-up hover-lift backdrop-blur-sm border border-white/20 relative z-10">
-        <div className="flex items-center space-x-4">
-          <Avatar src={`avatar-${user.avatar}`} alt={user.name} size="lg" />
-          <div className="flex-1">
-            <p className="font-bold text-lg">{user.name}</p>
-            <p className="text-blue-100 text-sm capitalize font-medium">{user.role}</p>
-            <div className="mt-2 w-full bg-white/20 rounded-full h-1">
-              <div className="bg-white h-1 rounded-full w-3/4"></div>
+        {/* Información del Usuario */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-lg">{user.name}</p>
+              <p className="text-slate-300 text-sm capitalize">{user.role}</p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Menú de Navegación Mejorado */}
-      <div className="space-y-3 mb-8 stagger-animation flex-1 relative z-10">
-        {menuItems.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onViewChange(item.id)}
-              className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all duration-300 text-left hover-lift group ${
-                currentView === item.id 
-                  ? 'bg-white text-blue-600 shadow-xl animate-pulse-hover border border-blue-200' 
-                  : 'hover:bg-white/20 text-white hover-scale backdrop-blur-sm'
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className={`p-2 rounded-xl transition-all duration-300 ${
-                currentView === item.id 
-                  ? 'bg-blue-100' 
-                  : 'bg-white/20 group-hover:bg-white/30'
-              }`}>
-                <Icon size={20} />
-              </div>
-              <span className="font-semibold text-base">{item.label}</span>
-              {currentView === item.id && (
-                <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-              )}
-            </button>
-          );
-        })}
-      </div>
+        {/* Menú de Navegación */}
+        <div className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onViewChange(item.id)}
+                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 text-left group ${
+                  currentView === item.id 
+                    ? 'bg-blue-600 text-white shadow-lg' 
+                    : 'hover:bg-white/10 text-slate-200 hover:text-white'
+                }`}
+              >
+                <Icon size={20} className="flex-shrink-0" />
+                <span className="font-medium">{item.label}</span>
+                {currentView === item.id && (
+                  <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Botón de Cerrar Sesión Mejorado */}
-        <div className="mt-auto p-4 relative z-10">
-          <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-xl p-3 backdrop-blur-sm border border-red-400/30 shadow-lg">
-            <Button
-              variant="ghost"
-              className="w-full text-white hover:text-white hover:bg-red-500 transition-all duration-300 group border border-red-300/50"
-              onClick={onLogout}
-            >
-              <LogOut size={18} className="mr-3 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="font-semibold">Cerrar Sesión</span>
-            </Button>
-          </div>
+        {/* Botón de Cerrar Sesión */}
+        <div className="p-4 border-t border-white/10">
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center space-x-3 p-3 rounded-xl bg-red-600/20 hover:bg-red-600 text-red-200 hover:text-white transition-all duration-200 group border border-red-500/30"
+          >
+            <LogOut size={20} className="group-hover:rotate-12 transition-transform duration-200" />
+            <span className="font-medium">Cerrar Sesión</span>
+          </button>
         </div>
       </nav>
     </>
