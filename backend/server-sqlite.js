@@ -543,6 +543,311 @@ app.post('/api/reports', authenticateToken, async (req, res) => {
   }
 });
 
+// Tasks endpoints
+app.get('/api/tasks', authenticateToken, async (req, res) => {
+  try {
+    const { status, teacherId, studentId } = req.query;
+    let query = 'SELECT * FROM tasks WHERE 1=1';
+    const params = [];
+
+    if (status) {
+      query += ' AND status = ?';
+      params.push(status);
+    }
+
+    if (teacherId) {
+      query += ' AND teacher_id = ?';
+      params.push(teacherId);
+    }
+
+    if (studentId) {
+      query += ' AND student_id = ?';
+      params.push(studentId);
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const rows = await dbAll(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo tareas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.post('/api/tasks', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, teacherId, classroomId, lessonId, dueDate, subject, grade } = req.body;
+    const taskId = `task-${Date.now()}`;
+
+    await dbRun(
+      'INSERT INTO tasks (id, title, description, teacher_id, classroom_id, lesson_id, due_date, subject, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [taskId, title, description, teacherId, classroomId, lessonId, dueDate, subject, grade, 'pending', new Date().toISOString()]
+    );
+
+    res.status(201).json({ message: 'Tarea creada exitosamente', id: taskId });
+  } catch (error) {
+    console.error('Error creando tarea:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, status, dueDate } = req.body;
+
+    await dbRun(
+      'UPDATE tasks SET title = ?, description = ?, status = ?, due_date = ?, updated_at = ? WHERE id = ?',
+      [title, description, status, dueDate, new Date().toISOString(), id]
+    );
+
+    res.json({ message: 'Tarea actualizada exitosamente' });
+  } catch (error) {
+    console.error('Error actualizando tarea:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.delete('/api/tasks/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await dbRun('DELETE FROM tasks WHERE id = ?', [id]);
+
+    res.json({ message: 'Tarea eliminada exitosamente' });
+  } catch (error) {
+    console.error('Error eliminando tarea:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Lessons endpoints
+app.get('/api/lessons', authenticateToken, async (req, res) => {
+  try {
+    const { teacherId, classroomId } = req.query;
+    let query = 'SELECT * FROM lessons WHERE 1=1';
+    const params = [];
+
+    if (teacherId) {
+      query += ' AND teacher_id = ?';
+      params.push(teacherId);
+    }
+
+    if (classroomId) {
+      query += ' AND classroom_id = ?';
+      params.push(classroomId);
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const rows = await dbAll(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo lecciones:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.post('/api/lessons', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, content, teacherId, classroomId, subject, grade } = req.body;
+    const lessonId = `lesson-${Date.now()}`;
+
+    await dbRun(
+      'INSERT INTO lessons (id, title, description, content, teacher_id, classroom_id, subject, grade, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [lessonId, title, description, content, teacherId, classroomId, subject, grade, new Date().toISOString()]
+    );
+
+    res.status(201).json({ message: 'Lección creada exitosamente', id: lessonId });
+  } catch (error) {
+    console.error('Error creando lección:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.put('/api/lessons/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, content } = req.body;
+
+    await dbRun(
+      'UPDATE lessons SET title = ?, description = ?, content = ?, updated_at = ? WHERE id = ?',
+      [title, description, content, new Date().toISOString(), id]
+    );
+
+    res.json({ message: 'Lección actualizada exitosamente' });
+  } catch (error) {
+    console.error('Error actualizando lección:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.delete('/api/lessons/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await dbRun('DELETE FROM lessons WHERE id = ?', [id]);
+
+    res.json({ message: 'Lección eliminada exitosamente' });
+  } catch (error) {
+    console.error('Error eliminando lección:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Students endpoints
+app.get('/api/students', authenticateToken, async (req, res) => {
+  try {
+    const { classroomId, gradeId } = req.query;
+    let query = 'SELECT * FROM users WHERE role = "estudiante"';
+    const params = [];
+
+    if (classroomId) {
+      query += ' AND classroom_id = ?';
+      params.push(classroomId);
+    }
+
+    if (gradeId) {
+      query += ' AND grade_id = ?';
+      params.push(gradeId);
+    }
+
+    query += ' ORDER BY name';
+
+    const rows = await dbAll(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo estudiantes:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.get('/api/students/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const row = await dbGet('SELECT * FROM users WHERE id = ? AND role = "estudiante"', [id]);
+    
+    if (!row) {
+      return res.status(404).json({ error: 'Estudiante no encontrado' });
+    }
+
+    res.json(row);
+  } catch (error) {
+    console.error('Error obteniendo estudiante:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Dashboard endpoints
+app.get('/api/dashboard/stats/:userId', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.query;
+
+    let stats = {
+      totalStudents: 0,
+      totalLessons: 0,
+      pendingTasks: 0,
+      completedTasks: 0
+    };
+
+    if (role === 'maestro') {
+      // Contar estudiantes en aulas del maestro
+      const studentsResult = await dbGet(
+        'SELECT COUNT(DISTINCT u.id) as count FROM users u JOIN classrooms c ON u.classroom_id = c.id WHERE c.teacher_id = ? AND u.role = "estudiante"',
+        [userId]
+      );
+      stats.totalStudents = studentsResult?.count || 0;
+
+      // Contar lecciones del maestro
+      const lessonsResult = await dbGet(
+        'SELECT COUNT(*) as count FROM lessons WHERE teacher_id = ?',
+        [userId]
+      );
+      stats.totalLessons = lessonsResult?.count || 0;
+
+      // Contar tareas pendientes
+      const pendingTasksResult = await dbGet(
+        'SELECT COUNT(*) as count FROM tasks WHERE teacher_id = ? AND status = "pending"',
+        [userId]
+      );
+      stats.pendingTasks = pendingTasksResult?.count || 0;
+
+      // Contar tareas completadas
+      const completedTasksResult = await dbGet(
+        'SELECT COUNT(*) as count FROM tasks WHERE teacher_id = ? AND status = "completed"',
+        [userId]
+      );
+      stats.completedTasks = completedTasksResult?.count || 0;
+    }
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error obteniendo estadísticas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.get('/api/dashboard/activity/:userId', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.query;
+
+    let activities = [];
+
+    if (role === 'maestro') {
+      // Obtener lecciones recientes
+      const lessons = await dbAll(
+        'SELECT id, title, created_at FROM lessons WHERE teacher_id = ? ORDER BY created_at DESC LIMIT 5',
+        [userId]
+      );
+      activities = lessons.map(lesson => ({
+        id: lesson.id,
+        type: 'lesson',
+        title: lesson.title,
+        createdAt: lesson.created_at
+      }));
+    }
+
+    res.json(activities);
+  } catch (error) {
+    console.error('Error obteniendo actividad:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Test endpoints (sin autenticación para pruebas)
+app.get('/api/test/tasks', async (req, res) => {
+  try {
+    const rows = await dbAll('SELECT * FROM tasks ORDER BY created_at DESC LIMIT 5');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo tareas de prueba:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.get('/api/test/lessons', async (req, res) => {
+  try {
+    const rows = await dbAll('SELECT * FROM lessons ORDER BY created_at DESC LIMIT 5');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo lecciones de prueba:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.get('/api/test/students', async (req, res) => {
+  try {
+    const rows = await dbAll('SELECT * FROM users WHERE role = "estudiante" ORDER BY name LIMIT 5');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error obteniendo estudiantes de prueba:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'IGER Backend API funcionando correctamente con SQLite' });

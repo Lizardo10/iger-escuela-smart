@@ -195,6 +195,90 @@ class ApiService {
     });
   }
 
+  // Tasks methods
+  async getTasks(filters?: { status?: string; teacherId?: string; studentId?: string }) {
+    const params = new URLSearchParams();
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.teacherId) params.append('teacherId', filters.teacherId);
+    if (filters?.studentId) params.append('studentId', filters.studentId);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<any[]>(`/tasks${query}`);
+  }
+
+  async createTask(taskData: any) {
+    return this.request<{ id: string }>('/tasks', {
+      method: 'POST',
+      body: JSON.stringify(taskData),
+    });
+  }
+
+  async updateTask(taskId: string, taskData: any) {
+    return this.request(`/tasks/${taskId}`, {
+      method: 'PUT',
+      body: JSON.stringify(taskData),
+    });
+  }
+
+  async deleteTask(taskId: string) {
+    return this.request(`/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Lessons methods
+  async getLessons(filters?: { teacherId?: string; classroomId?: string }) {
+    const params = new URLSearchParams();
+    if (filters?.teacherId) params.append('teacherId', filters.teacherId);
+    if (filters?.classroomId) params.append('classroomId', filters.classroomId);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<any[]>(`/lessons${query}`);
+  }
+
+  async createLesson(lessonData: any) {
+    return this.request<{ id: string }>('/lessons', {
+      method: 'POST',
+      body: JSON.stringify(lessonData),
+    });
+  }
+
+  async updateLesson(lessonId: string, lessonData: any) {
+    return this.request(`/lessons/${lessonId}`, {
+      method: 'PUT',
+      body: JSON.stringify(lessonData),
+    });
+  }
+
+  async deleteLesson(lessonId: string) {
+    return this.request(`/lessons/${lessonId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Students methods
+  async getStudents(filters?: { classroomId?: string; gradeId?: string }) {
+    const params = new URLSearchParams();
+    if (filters?.classroomId) params.append('classroomId', filters.classroomId);
+    if (filters?.gradeId) params.append('gradeId', filters.gradeId);
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<any[]>(`/students${query}`);
+  }
+
+  async getStudent(studentId: string) {
+    return this.request<any>(`/students/${studentId}`);
+  }
+
+  // Dashboard methods
+  async getDashboardStats(userId: string, role: string) {
+    return this.request<any>(`/dashboard/stats/${userId}?role=${role}`);
+  }
+
+  async getDashboardActivity(userId: string, role: string) {
+    return this.request<any[]>(`/dashboard/activity/${userId}?role=${role}`);
+  }
+
   // Health check
   async healthCheck() {
     return this.request('/health');

@@ -1,82 +1,215 @@
-import React from 'react';
-import { Users, BookOpen, Settings, Shield, BarChart3, Database, TestTube } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, BookOpen, Settings, Shield, BarChart3, Database, TestTube, LogOut, Home, Calendar, CreditCard, FileText, GraduationCap, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { User, Classroom } from '../../types';
-import { APITest } from '../Test/APITest';
-import { LoginDebug } from '../Debug/LoginDebug';
+import { apiService } from '../../services/apiService';
 
 interface AdminDashboardProps {
   user: User;
   classrooms: Classroom[];
   onViewChange: (view: string) => void;
+  logout: () => void;
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, classrooms, onViewChange }) => {
-  // Estadísticas simuladas
-  const totalUsers = 45; // Simulado
-  const totalStudents = 32;
-  const totalTeachers = 8;
-  const systemHealth = 98; // Porcentaje
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, classrooms, onViewChange, logout }) => {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalClassrooms: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      setLoading(true);
+      
+      // Cargar estadísticas del sistema
+      const usersResponse = await apiService.getUsers();
+      if (usersResponse.data) {
+        const users = usersResponse.data;
+        setStats({
+          totalUsers: users.length,
+          totalStudents: users.filter(u => u.role === 'estudiante').length,
+          totalTeachers: users.filter(u => u.role === 'maestro').length,
+          totalClassrooms: classrooms.length
+        });
+      }
+    } catch (error) {
+      console.error('Error cargando estadísticas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-4 sm:p-6 text-white">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Panel Administrativo 🛡️</h1>
-        <p className="text-purple-100 text-base sm:text-lg">Gestión y configuración del sistema IGER</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header con navegación */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-2xl font-bold text-gray-900">Panel Administrativo</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">Hola, {user.name}</span>
+              <Button onClick={logout} variant="outline" size="sm">
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar Sesión
+              </Button>
+            </div>
+          </div>
+          
+          {/* Navigation */}
+          <div className="flex space-x-1 pb-4">
+            <Button
+              onClick={() => onViewChange('dashboard')}
+              variant="default"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Home className="w-4 h-4" />
+              Dashboard
+            </Button>
+            <Button
+              onClick={() => onViewChange('users')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              Usuarios
+            </Button>
+            <Button
+              onClick={() => onViewChange('classrooms')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              Aulas
+            </Button>
+            <Button
+              onClick={() => onViewChange('calendar')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Calendar className="w-4 h-4" />
+              Calendario
+            </Button>
+            <Button
+              onClick={() => onViewChange('payments')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <CreditCard className="w-4 h-4" />
+              Pagos
+            </Button>
+            <Button
+              onClick={() => onViewChange('reports')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Reportes
+            </Button>
+            <Button
+              onClick={() => onViewChange('grades')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GraduationCap className="w-4 h-4" />
+              Grados
+            </Button>
+            <Button
+              onClick={() => onViewChange('settings')}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Configuración
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Estadísticas Principales */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="bg-gradient-to-br from-blue-400 to-blue-500 text-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-sm">Total Usuarios</p>
-                <p className="text-2xl font-bold">{totalUsers}</p>
-              </div>
-              <Users size={32} className="text-blue-200" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-6 text-white">
+            <h1 className="text-3xl font-bold mb-2">Panel Administrativo 🛡️</h1>
+            <p className="text-purple-100 text-lg">Gestión y configuración del sistema IGER</p>
+          </div>
 
-        <Card className="bg-gradient-to-br from-green-400 to-green-500 text-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 text-sm">Estudiantes</p>
-                <p className="text-2xl font-bold">{totalStudents}</p>
-              </div>
-              <Users size={32} className="text-green-200" />
-            </div>
-          </CardContent>
-        </Card>
+          {/* Estadísticas Principales */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-br from-blue-400 to-blue-500 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm">Total Usuarios</p>
+                    <p className="text-2xl font-bold">
+                      {loading ? '...' : stats.totalUsers}
+                    </p>
+                  </div>
+                  <Users size={32} className="text-blue-200" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-100 text-sm">Maestros</p>
-                <p className="text-2xl font-bold">{totalTeachers}</p>
-              </div>
-              <BookOpen size={32} className="text-orange-200" />
-            </div>
-          </CardContent>
-        </Card>
+            <Card className="bg-gradient-to-br from-green-400 to-green-500 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100 text-sm">Estudiantes</p>
+                    <p className="text-2xl font-bold">
+                      {loading ? '...' : stats.totalStudents}
+                    </p>
+                  </div>
+                  <Users size={32} className="text-green-200" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm">Sistema</p>
-                <p className="text-2xl font-bold">{systemHealth}%</p>
-              </div>
-              <BarChart3 size={32} className="text-purple-200" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-100 text-sm">Maestros</p>
+                    <p className="text-2xl font-bold">
+                      {loading ? '...' : stats.totalTeachers}
+                    </p>
+                  </div>
+                  <BookOpen size={32} className="text-orange-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm">Aulas</p>
+                    <p className="text-2xl font-bold">
+                      {loading ? '...' : stats.totalClassrooms}
+                    </p>
+                  </div>
+                  <BookOpen size={32} className="text-purple-200" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
       {/* Panel de Control */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -288,6 +421,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, classrooms
           </Button>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 };

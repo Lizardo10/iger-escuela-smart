@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
-import { LoginForm } from './components/Auth/LoginForm';
+import { ImprovedLoginForm } from './components/Auth/ImprovedLoginForm';
 import { RegisterForm, RegisterData } from './components/Auth/RegisterForm';
 import { StudentDashboard } from './components/Student/StudentDashboard';
 import { TeacherDashboard } from './components/Teacher/TeacherDashboard';
@@ -25,13 +25,13 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-yellow-400 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-6 mx-auto"></div>
-          <div className="logo-float mb-6">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6 mx-auto"></div>
+          <div className="mb-6">
             <Logo size="xl" className="justify-center" />
           </div>
-          <p className="text-white/80 text-lg animate-pulse">Cargando tu experiencia educativa...</p>
+          <p className="text-gray-600 text-lg animate-pulse">Cargando tu experiencia educativa...</p>
         </div>
       </div>
     );
@@ -55,14 +55,15 @@ function App() {
     }
     
     return (
-      <LoginForm 
-        onLogin={async (email: string) => {
-          const result = await login(email);
+      <ImprovedLoginForm 
+        onLogin={async (email: string, password?: string) => {
+          const result = await login(email, password);
           if (!result.success) {
             alert(result.error || 'Error al iniciar sesión');
           }
         }}
         onShowRegister={() => setShowRegisterForm(true)}
+        loading={loading}
       />
     );
   }
@@ -103,6 +104,7 @@ function App() {
                 user={user}
                 classrooms={[]}
                 onViewChange={setCurrentView}
+                logout={logout}
               />
             );
         }

@@ -1,18 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, BookOpen, Calendar, Plus, TrendingUp, Clock, Home, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { User } from '../../types';
 import TeacherCalendar from './TeacherCalendar';
 import TeacherChat from './TeacherChat';
+import CreateLessonModal from './CreateLessonModal';
+import CreateTaskModal from './CreateTaskModal';
+import { apiService } from '../../services/apiService';
 
 interface TeacherDashboardProps {
   user: User;
   logout: () => void;
 }
 
+interface DashboardStats {
+  totalStudents: number;
+  totalLessons: number;
+  pendingTasks: number;
+  completedTasks: number;
+}
+
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [stats, setStats] = useState<DashboardStats>({
+    totalStudents: 0,
+    totalLessons: 0,
+    pendingTasks: 0,
+    completedTasks: 0
+  });
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [classrooms, setClassrooms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateLesson, setShowCreateLesson] = useState(false);
+  const [showCreateTask, setShowCreateTask] = useState(false);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Cargar estadísticas del dashboard
+      const statsResponse = await apiService.getDashboardStats(user.id, 'maestro');
+      if (statsResponse.data) {
+        setStats(statsResponse.data);
+      }
+
+      // Cargar lecciones del maestro
+      const lessonsResponse = await apiService.getLessons({ teacherId: user.id });
+      if (lessonsResponse.data) {
+        setLessons(lessonsResponse.data);
+      }
+
+      // Cargar aulas del maestro
+      const classroomsResponse = await apiService.getClassrooms();
+      if (classroomsResponse.data) {
+        setClassrooms(classroomsResponse.data);
+      }
+    } catch (error) {
+      console.error('Error cargando datos del dashboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateLesson = async () => {
+    setShowCreateLesson(true);
+  };
+
+  const handleCreateTask = async () => {
+    setShowCreateTask(true);
+  };
+
+  const handleLessonCreated = () => {
+    loadDashboardData(); // Recargar datos
+  };
+
+  const handleTaskCreated = () => {
+    loadDashboardData(); // Recargar datos
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -32,7 +101,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-blue-100 text-sm">Estudiantes</p>
-                      <p className="text-2xl font-bold">45</p>
+                      <p className="text-2xl font-bold">
+                        {loading ? '...' : stats.totalStudents}
+                      </p>
                     </div>
                     <Users size={32} className="text-blue-200" />
                   </div>
@@ -44,7 +115,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-green-100 text-sm">Lecciones</p>
-                      <p className="text-2xl font-bold">18</p>
+                      <p className="text-2xl font-bold">
+                        {loading ? '...' : stats.totalLessons}
+                      </p>
                     </div>
                     <BookOpen size={32} className="text-green-200" />
                   </div>
@@ -56,7 +129,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-orange-100 text-sm">Tareas Pendientes</p>
-                      <p className="text-2xl font-bold">7</p>
+                      <p className="text-2xl font-bold">
+                        {loading ? '...' : stats.pendingTasks}
+                      </p>
                     </div>
                     <Clock size={32} className="text-orange-200" />
                   </div>
@@ -68,7 +143,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-purple-100 text-sm">Completadas</p>
-                      <p className="text-2xl font-bold">23</p>
+                      <p className="text-2xl font-bold">
+                        {loading ? '...' : stats.completedTasks}
+                      </p>
                     </div>
                     <TrendingUp size={32} className="text-purple-200" />
                   </div>
@@ -85,6 +162,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                 </CardHeader>
                 <CardContent>
                   <Button 
+                    onClick={handleCreateLesson}
                     className="w-full bg-blue-500 hover:bg-blue-600"
                   >
                     <Plus size={16} className="mr-2" />
@@ -100,6 +178,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                 </CardHeader>
                 <CardContent>
                   <Button 
+                    onClick={handleCreateTask}
                     className="w-full bg-green-500 hover:bg-green-600"
                   >
                     <Plus size={16} className="mr-2" />
@@ -116,24 +195,28 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <h2 className="text-xl font-bold text-gray-800">Mis Aulas</h2>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-800">10°A - Matemáticas</h3>
-                      <p className="text-sm text-gray-600">25 estudiantes</p>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                      <p className="text-gray-600 mt-2">Cargando aulas...</p>
                     </div>
-                    <Button size="sm">
-                      Ver Estudiantes
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-800">10°B - Historia</h3>
-                      <p className="text-sm text-gray-600">28 estudiantes</p>
+                  ) : classrooms.length > 0 ? (
+                    classrooms.map((classroom) => (
+                      <div key={classroom.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{classroom.name}</h3>
+                          <p className="text-sm text-gray-600">{classroom.studentCount || 0} estudiantes</p>
+                        </div>
+                        <Button size="sm">
+                          Ver Estudiantes
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-gray-600">No tienes aulas asignadas</p>
                     </div>
-                    <Button size="sm">
-                      Ver Estudiantes
-                    </Button>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -142,26 +225,30 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
                   <h2 className="text-xl font-bold text-gray-800">Actividad Reciente</h2>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-blue-50 rounded-lg">
-                      <BookOpen size={16} className="text-blue-500 mr-3" />
-                      <div>
-                        <p className="font-semibold text-sm text-gray-800">Álgebra Avanzada</p>
-                        <p className="text-xs text-gray-600">
-                          Creada el 15 de enero
-                        </p>
-                      </div>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto"></div>
+                      <p className="text-gray-600 mt-2">Cargando actividad...</p>
                     </div>
-                    <div className="flex items-center p-3 bg-green-50 rounded-lg">
-                      <BookOpen size={16} className="text-green-500 mr-3" />
-                      <div>
-                        <p className="font-semibold text-sm text-gray-800">Revolución Mexicana</p>
-                        <p className="text-xs text-gray-600">
-                          Creada el 12 de enero
-                        </p>
-                      </div>
+                  ) : lessons.length > 0 ? (
+                    <div className="space-y-3">
+                      {lessons.slice(0, 4).map((lesson) => (
+                        <div key={lesson.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
+                          <BookOpen size={16} className="text-blue-500 mr-3" />
+                          <div>
+                            <p className="font-semibold text-sm text-gray-800">{lesson.title}</p>
+                            <p className="text-xs text-gray-600">
+                              Creada el {new Date(lesson.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-gray-600">No hay actividad reciente</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -225,6 +312,26 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, logout
       <div className="max-w-7xl mx-auto">
         {renderContent()}
       </div>
+
+      {/* Modals */}
+      {showCreateLesson && (
+        <CreateLessonModal
+          onClose={() => setShowCreateLesson(false)}
+          onSuccess={handleLessonCreated}
+          teacherId={user.id}
+          classrooms={classrooms}
+        />
+      )}
+
+      {showCreateTask && (
+        <CreateTaskModal
+          onClose={() => setShowCreateTask(false)}
+          onSuccess={handleTaskCreated}
+          teacherId={user.id}
+          classrooms={classrooms}
+          lessons={lessons}
+        />
+      )}
     </div>
   );
 };

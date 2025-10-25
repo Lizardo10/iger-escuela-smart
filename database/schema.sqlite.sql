@@ -40,10 +40,12 @@ CREATE TABLE IF NOT EXISTS users (
     parent_phone TEXT,
     parent_consent INTEGER DEFAULT 0,
     grade_id TEXT,
+    classroom_id TEXT,
     is_active INTEGER DEFAULT 1,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (grade_id) REFERENCES grades(id)
+    FOREIGN KEY (grade_id) REFERENCES grades(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
 -- Tabla de aulas/clases
@@ -157,13 +159,14 @@ CREATE TABLE IF NOT EXISTS lessons (
     title TEXT NOT NULL,
     description TEXT,
     content TEXT,
+    teacher_id TEXT NOT NULL,
     classroom_id TEXT NOT NULL,
-    created_by TEXT NOT NULL,
-    is_completed INTEGER DEFAULT 0,
+    subject TEXT,
+    grade TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    FOREIGN KEY (teacher_id) REFERENCES users(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
 -- Tabla de tareas
@@ -171,17 +174,20 @@ CREATE TABLE IF NOT EXISTS tasks (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
+    teacher_id TEXT NOT NULL,
+    classroom_id TEXT,
     lesson_id TEXT,
+    student_id TEXT,
     due_date TEXT,
-    assigned_to TEXT,
-    calendar_event_id TEXT,
+    subject TEXT,
+    grade TEXT,
     status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
-    created_by TEXT NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (teacher_id) REFERENCES users(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     FOREIGN KEY (lesson_id) REFERENCES lessons(id),
-    FOREIGN KEY (calendar_event_id) REFERENCES calendar_events(id),
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    FOREIGN KEY (student_id) REFERENCES users(id)
 );
 
 -- Tabla de recursos
@@ -238,13 +244,13 @@ INSERT OR IGNORE INTO grades (id, name, level, description, max_students, academ
 ('grado-2', 'Segundo Grado', 2, 'Segundo año de educación básica', 25, 'year-2024'),
 ('grado-3', 'Tercer Grado', 3, 'Tercer año de educación básica', 25, 'year-2024');
 
-INSERT OR IGNORE INTO users (id, name, email, role, avatar, grade_id, parent_email, parent_phone, parent_consent, birth_date, is_active) VALUES
-('admin-1', 'Administrador IGER', 'admin@iger.edu', 'administrador', 'avatar-admin', NULL, NULL, NULL, NULL, NULL, 1),
-('teacher-1', 'Prof. Ana Martínez', 'ana.martinez@iger.edu', 'maestro', 'avatar-teacher-1', NULL, NULL, '+502 9876-5432', NULL, NULL, 1),
-('teacher-2', 'Prof. Carlos López', 'carlos.lopez@iger.edu', 'maestro', 'avatar-teacher-2', NULL, NULL, '+502 5555-1234', NULL, NULL, 1),
-('student-1', 'María García López', 'maria.garcia@iger.edu', 'estudiante', 'avatar-student-1', 'grado-1', 'padre.garcia@email.com', '+502 1234-5678', 1, '2018-05-15', 1),
-('student-2', 'Carlos López Pérez', 'carlos.lopez@iger.edu', 'estudiante', 'avatar-student-2', 'grado-2', 'madre.lopez@email.com', '+502 5555-1234', 1, '2017-08-22', 1),
-('student-3', 'Ana Rodríguez', 'ana.rodriguez@iger.edu', 'estudiante', 'avatar-student-3', 'grado-1', 'padre.rodriguez@email.com', '+502 7777-8888', 1, '2018-03-10', 1);
+INSERT OR IGNORE INTO users (id, name, email, password_hash, role, avatar, grade_id, classroom_id, parent_email, parent_phone, parent_consent, birth_date, is_active) VALUES
+('admin-1', 'Administrador IGER', 'admin@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'administrador', 'avatar-admin', NULL, NULL, NULL, NULL, NULL, NULL, 1),
+('teacher-1', 'Prof. Ana Martínez', 'ana.martinez@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'maestro', 'avatar-teacher-1', NULL, NULL, NULL, '+502 9876-5432', NULL, NULL, 1),
+('teacher-2', 'Prof. Carlos López', 'carlos.lopez@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'maestro', 'avatar-teacher-2', NULL, NULL, NULL, '+502 5555-1234', NULL, NULL, 1),
+('student-1', 'María García López', 'maria.garcia@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'estudiante', 'avatar-student-1', 'grado-1', 'aula-1a', 'padre.garcia@email.com', '+502 1234-5678', 1, '2018-05-15', 1),
+('student-2', 'Carlos López Pérez', 'carlos.lopez@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'estudiante', 'avatar-student-2', 'grado-2', 'aula-2b', 'madre.lopez@email.com', '+502 5555-1234', 1, '2017-08-22', 1),
+('student-3', 'Ana Rodríguez', 'ana.rodriguez@iger.edu', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'estudiante', 'avatar-student-3', 'grado-1', 'aula-1a', 'padre.rodriguez@email.com', '+502 7777-8888', 1, '2018-03-10', 1);
 
 INSERT OR IGNORE INTO classrooms (id, name, teacher_id, grade_id, academic_year_id, capacity) VALUES
 ('aula-1a', 'Aula 1A - Primer Grado', 'teacher-1', 'grado-1', 'year-2024', 25),
