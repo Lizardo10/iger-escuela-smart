@@ -5,14 +5,7 @@ import { LoginForm } from './components/Auth/LoginForm';
 import { RegisterForm, RegisterData } from './components/Auth/RegisterForm';
 import { Navigation } from './components/Layout/Navigation';
 import { StudentDashboard } from './components/Student/StudentDashboard';
-import { AITutorChat } from './components/Student/AITutorChat';
-import { LessonsView } from './components/Student/LessonsView';
-import { TasksView } from './components/Student/TasksView';
-import { AchievementsView } from './components/Student/AchievementsView';
 import { TeacherDashboard } from './components/Teacher/TeacherDashboard';
-import { AttendanceSystem } from './components/Teacher/AttendanceSystem';
-import { StudentsView } from './components/Teacher/StudentsView';
-import { CalendarView } from './components/Teacher/CalendarView';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
 import { UserManagement } from './components/Admin/UserManagement';
 import { ClassroomManagement } from './components/Admin/ClassroomManagement';
@@ -80,52 +73,10 @@ function App() {
   const renderContent = () => {
     switch (user.role) {
       case 'estudiante':
-        switch (currentView) {
-          case 'lessons':
-            return <LessonsView user={user} lessons={lessons} onViewChange={setCurrentView} />;
-          case 'tasks':
-            return <TasksView user={user} tasks={tasks} onViewChange={setCurrentView} />;
-          case 'achievements':
-            return <AchievementsView user={user} achievements={achievements} onViewChange={setCurrentView} />;
-          case 'chat':
-            return <AITutorChat user={user} />;
-          default:
-            return (
-              <StudentDashboard
-                user={user}
-                lessons={lessons}
-                tasks={tasks}
-                achievements={achievements}
-                onViewChange={setCurrentView}
-              />
-            );
-        }
+        return <StudentDashboard user={user} onLogout={logout} />;
       
       case 'maestro':
-        switch (currentView) {
-          case 'lessons':
-            return <LessonsView user={user} lessons={lessons} onViewChange={setCurrentView} />;
-          case 'students':
-            return <StudentsView user={user} classrooms={classrooms} onViewChange={setCurrentView} />;
-          case 'attendance':
-            return <AttendanceSystem user={user} classroom={classrooms[0]} currentUser={user} />;
-          case 'calendar':
-            return <CalendarView user={user} classrooms={classrooms} onViewChange={setCurrentView} />;
-          case 'chat':
-            return <AITutorChat user={user} />;
-          default:
-            return (
-              <TeacherDashboard
-                user={user}
-                lessons={lessons}
-                tasks={tasks}
-                classrooms={classrooms}
-                onViewChange={setCurrentView}
-                onAddLesson={addLesson}
-                onAddTask={addTask}
-              />
-            );
-        }
+        return <TeacherDashboard user={user} onLogout={logout} />;
       
           case 'administrador':
             switch (currentView) {
@@ -165,16 +116,8 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-gray-50">
-      <Navigation
-        user={user}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        onLogout={logout}
-      />
-      <main className="flex-1 overflow-auto">
-        {renderContent()}
-      </main>
+    <div className="min-h-screen bg-gray-50">
+      {renderContent()}
     </div>
   );
 }

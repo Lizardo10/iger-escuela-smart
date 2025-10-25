@@ -1,52 +1,56 @@
 import React, { useState } from 'react';
-import { Users, BookOpen, Calendar, Plus, TrendingUp, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { User, Lesson, Task, Classroom } from '../../types';
+import { Logo } from '../ui/Logo';
+import { User } from '../../types';
+import { TeacherCalendar } from './TeacherCalendar';
+import { TeacherChat } from './TeacherChat';
+import { 
+  BookOpen, 
+  Users, 
+  Calendar, 
+  BarChart3,
+  Trophy,
+  Target,
+  Clock,
+  CheckCircle,
+  TrendingUp,
+  Award,
+  Star,
+  MessageCircle,
+  Upload,
+  FileText,
+  Bell,
+  LogOut,
+  User as UserIcon,
+  GraduationCap,
+  Plus
+} from 'lucide-react';
 
 interface TeacherDashboardProps {
   user: User;
-  lessons: Lesson[];
-  tasks: Task[];
-  classrooms: Classroom[];
-  onViewChange: (view: string) => void;
-  onAddLesson: (lesson: Omit<Lesson, 'id' | 'createdAt'>) => void;
-  onAddTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
+  onLogout: () => void;
 }
 
-export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ 
-  user, 
-  lessons, 
-  tasks, 
-  classrooms,
-  onViewChange,
-  onAddLesson,
-  onAddTask
-}) => {
-  const [showAddLesson, setShowAddLesson] = useState(false);
-  const [showAddTask, setShowAddTask] = useState(false);
+export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user, onLogout }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const myClassrooms = classrooms.filter(c => c.teacherId === user.id);
-  const totalStudents = myClassrooms.reduce((sum, c) => sum + c.students.length, 0);
-  const pendingTasks = tasks.filter(t => t.status === 'pending');
-  const completedTasks = tasks.filter(t => t.status === 'completed');
-
-  return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-4 sm:p-6 text-white">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">¡Hola, {user.name}! 👩‍🏫</h1>
-        <p className="text-green-100 text-base sm:text-lg">Panel de control para gestionar tus clases</p>
+  const renderOverview = () => (
+    <div className="space-y-6">
+      {/* Header de Bienvenida */}
+      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white">
+        <h1 className="text-3xl font-bold mb-2">¡Hola, {user.name}! 👩‍🏫</h1>
+        <p className="text-green-100 text-lg">Panel de control para gestionar tus clases</p>
       </div>
 
-      {/* Estadísticas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Estadísticas Principales */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-blue-400 to-blue-500 text-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-sm">Estudiantes</p>
-                <p className="text-2xl font-bold">{totalStudents}</p>
+                <p className="text-2xl font-bold">45</p>
               </div>
               <Users size={32} className="text-blue-200" />
             </div>
@@ -57,8 +61,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Lecciones</p>
-                <p className="text-2xl font-bold">{lessons.length}</p>
+                <p className="text-green-100 text-sm">Clases Programadas</p>
+                <p className="text-2xl font-bold">12</p>
               </div>
               <BookOpen size={32} className="text-green-200" />
             </div>
@@ -69,10 +73,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm">Tareas Pendientes</p>
-                <p className="text-2xl font-bold">{pendingTasks.length}</p>
+                <p className="text-orange-100 text-sm">Tareas Creadas</p>
+                <p className="text-2xl font-bold">8</p>
               </div>
-              <Clock size={32} className="text-orange-200" />
+              <Target size={32} className="text-orange-200" />
             </div>
           </CardContent>
         </Card>
@@ -81,8 +85,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm">Completadas</p>
-                <p className="text-2xl font-bold">{completedTasks.length}</p>
+                <p className="text-purple-100 text-sm">Promedio General</p>
+                <p className="text-2xl font-bold">87%</p>
               </div>
               <TrendingUp size={32} className="text-purple-200" />
             </div>
@@ -92,296 +96,193 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
       {/* Acciones Rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card>
           <CardHeader>
-            <h2 className="text-xl font-bold text-gray-800">Crear Nueva Lección</h2>
-            <p className="text-gray-600">Añade contenido educativo para tus estudiantes</p>
+            <h3 className="text-lg font-semibold flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-blue-500" />
+              Calendario de Clases
+            </h3>
           </CardHeader>
           <CardContent>
+            <p className="text-gray-600 mb-4">Organiza tus clases y actividades académicas</p>
             <Button 
-              onClick={() => setShowAddLesson(true)}
-              className="w-full bg-blue-500 hover:bg-blue-600"
+              onClick={() => setActiveTab('calendar')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              <Plus size={16} className="mr-2" />
-              Nueva Lección
+              Ver Calendario
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card>
           <CardHeader>
-            <h2 className="text-xl font-bold text-gray-800">Asignar Tarea</h2>
-            <p className="text-gray-600">Crea tareas y asígnalas automáticamente</p>
+            <h3 className="text-lg font-semibold flex items-center">
+              <MessageCircle className="w-5 h-5 mr-2 text-green-500" />
+              Chat IA Pedagógico
+            </h3>
           </CardHeader>
           <CardContent>
+            <p className="text-gray-600 mb-4">Tu asistente especializado en educación</p>
             <Button 
-              onClick={() => setShowAddTask(true)}
-              className="w-full bg-green-500 hover:bg-green-600"
+              onClick={() => setActiveTab('chat')}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
             >
-              <Plus size={16} className="mr-2" />
-              Nueva Tarea
+              Chatear con ProfeIA
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Resumen de Clases */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-bold text-gray-800">Mis Aulas</h2>
-          </CardHeader>
-          <CardContent>
-            {myClassrooms.map((classroom) => (
-              <div key={classroom.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-3">
-                <div>
-                  <h3 className="font-semibold text-gray-800">{classroom.name}</h3>
-                  <p className="text-sm text-gray-600">{classroom.students.length} estudiantes</p>
-                </div>
-                <Button size="sm" onClick={() => onViewChange('students')}>
-                  Ver Estudiantes
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      {/* Gestión de Estudiantes */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-semibold flex items-center">
+            <Users className="w-5 h-5 mr-2 text-purple-500" />
+            Gestión de Estudiantes
+          </h3>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-800 mb-2">📚 Matemáticas</h4>
+              <p className="text-sm text-blue-700">15 estudiantes</p>
+              <p className="text-xs text-blue-600">Promedio: 85%</p>
+            </div>
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h4 className="font-semibold text-green-800 mb-2">🔬 Ciencias</h4>
+              <p className="text-sm text-green-700">18 estudiantes</p>
+              <p className="text-xs text-green-600">Promedio: 88%</p>
+            </div>
+            <div className="p-4 bg-purple-50 rounded-lg">
+              <h4 className="font-semibold text-purple-800 mb-2">📖 Historia</h4>
+              <p className="text-sm text-purple-700">12 estudiantes</p>
+              <p className="text-xs text-purple-600">Promedio: 82%</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-bold text-gray-800">Actividad Reciente</h2>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {lessons.slice(0, 4).map((lesson) => (
-                <div key={lesson.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
-                  <BookOpen size={16} className="text-blue-500 mr-3" />
-                  <div>
-                    <p className="font-semibold text-sm text-gray-800">{lesson.title}</p>
-                    <p className="text-xs text-gray-600">
-                      Creada el {new Date(lesson.createdAt).toLocaleDateString()}
-                    </p>
+      {/* Chat IA */}
+      <Card className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+        <CardContent className="p-6 text-center">
+          <GraduationCap size={48} className="mx-auto mb-4 text-purple-100" />
+          <h3 className="font-bold mb-2 text-xl">ProfeIA - Tu Asistente Pedagógico</h3>
+          <p className="text-purple-100 mb-4">
+            Especializado en estrategias pedagógicas, evaluación y gestión del aula
+          </p>
+          <Button 
+            variant="ghost"
+            className="text-white border-white hover:bg-white hover:text-purple-600"
+            onClick={() => setActiveTab('chat')}
+          >
+            Iniciar Conversación
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderStudents = () => (
+    <div className="text-center py-12">
+      <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+      <h3 className="text-xl font-semibold text-gray-600">Gestión de Estudiantes</h3>
+      <p className="text-gray-500">Próximamente disponible</p>
+    </div>
+  );
+
+  const renderTasks = () => (
+    <div className="text-center py-12">
+      <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+      <h3 className="text-xl font-semibold text-gray-600">Crear Tareas</h3>
+      <p className="text-gray-500">Próximamente disponible</p>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Logo size="sm" />
+              <h1 className="ml-3 text-xl font-semibold text-gray-900">IGER Escuela Smart</h1>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    {user.name.charAt(0).toUpperCase()}
                   </div>
-                </div>
-              ))}
+                  <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                  <UserIcon className="w-4 h-4 text-gray-500" />
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-1 z-50">
+                    <div className="px-4 py-2 border-b">
+                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-xs text-green-600 font-medium">Maestro</p>
+                    </div>
+                    <button
+                      onClick={onLogout}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* Modales para crear lección y tarea */}
-      {showAddLesson && (
-        <CreateLessonModal 
-          onClose={() => setShowAddLesson(false)}
-          onSave={onAddLesson}
-          classrooms={myClassrooms}
-          userId={user.id}
-        />
-      )}
+      {/* Navigation */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8">
+            {[
+              { id: 'overview', label: '📊 Resumen', icon: BarChart3 },
+              { id: 'students', label: '👥 Estudiantes', icon: Users },
+              { id: 'tasks', label: '📝 Tareas', icon: Target },
+              { id: 'calendar', label: '📅 Calendario', icon: Calendar },
+              { id: 'chat', label: '💬 Chat IA', icon: MessageCircle }
+            ].map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-green-500 text-green-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <IconComponent className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
 
-      {showAddTask && (
-        <CreateTaskModal 
-          onClose={() => setShowAddTask(false)}
-          onSave={onAddTask}
-          lessons={lessons}
-          classrooms={myClassrooms}
-          userId={user.id}
-        />
-      )}
-    </div>
-  );
-};
-
-// Modal para crear lección
-interface CreateLessonModalProps {
-  onClose: () => void;
-  onSave: (lesson: Omit<Lesson, 'id' | 'createdAt'>) => void;
-  classrooms: Classroom[];
-  userId: string;
-}
-
-const CreateLessonModal: React.FC<CreateLessonModalProps> = ({ onClose, onSave, classrooms, userId }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
-    classroomId: classrooms[0]?.id || ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({
-      ...formData,
-      resources: [],
-      createdBy: userId
-    });
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <h3 className="text-xl font-bold">Nueva Lección</h3>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Título</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Descripción</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none h-20 resize-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Aula</label>
-              <select
-                value={formData.classroomId}
-                onChange={(e) => setFormData({ ...formData, classroomId: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-              >
-                {classrooms.map((classroom) => (
-                  <option key={classroom.id} value={classroom.id}>
-                    {classroom.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex space-x-3">
-              <Button type="button" variant="ghost" onClick={onClose} className="flex-1">
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                Crear Lección
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Modal para crear tarea
-interface CreateTaskModalProps {
-  onClose: () => void;
-  onSave: (task: Omit<Task, 'id' | 'createdAt'>) => void;
-  lessons: Lesson[];
-  classrooms: Classroom[];
-  userId: string;
-}
-
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSave, lessons, classrooms, userId }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    lessonId: lessons[0]?.id || '',
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    classroomId: classrooms[0]?.id || ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const selectedClassroom = classrooms.find(c => c.id === formData.classroomId);
-    onSave({
-      title: formData.title,
-      description: formData.description,
-      lessonId: formData.lessonId,
-      dueDate: new Date(formData.dueDate).toISOString(),
-      assignedTo: selectedClassroom?.students || [],
-      status: 'pending',
-      createdBy: userId
-    });
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <h3 className="text-xl font-bold">Nueva Tarea</h3>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Título</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Descripción</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none h-20 resize-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Lección</label>
-              <select
-                value={formData.lessonId}
-                onChange={(e) => setFormData({ ...formData, lessonId: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-              >
-                {lessons.map((lesson) => (
-                  <option key={lesson.id} value={lesson.id}>
-                    {lesson.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Aula</label>
-              <select
-                value={formData.classroomId}
-                onChange={(e) => setFormData({ ...formData, classroomId: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-              >
-                {classrooms.map((classroom) => (
-                  <option key={classroom.id} value={classroom.id}>
-                    {classroom.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Fecha de entrega</label>
-              <input
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-            <div className="flex space-x-3">
-              <Button type="button" variant="ghost" onClick={onClose} className="flex-1">
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                Crear Tarea
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'students' && renderStudents()}
+        {activeTab === 'tasks' && renderTasks()}
+        {activeTab === 'calendar' && <TeacherCalendar user={user} />}
+        {activeTab === 'chat' && <TeacherChat user={user} />}
+      </div>
     </div>
   );
 };
