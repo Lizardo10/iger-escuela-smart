@@ -577,12 +577,12 @@ app.get('/api/tasks', authenticateToken, async (req, res) => {
 
 app.post('/api/tasks', authenticateToken, async (req, res) => {
   try {
-    const { title, description, teacherId, classroomId, lessonId, dueDate, subject, grade } = req.body;
+    const { title, description, teacher_id, classroom_id, lesson_id, due_date, subject, grade } = req.body;
     const taskId = `task-${Date.now()}`;
 
     await dbRun(
       'INSERT INTO tasks (id, title, description, teacher_id, classroom_id, lesson_id, due_date, subject, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [taskId, title, description, teacherId, classroomId, lessonId, dueDate, subject, grade, 'pending', new Date().toISOString()]
+      [taskId, title, description, teacher_id, classroom_id, lesson_id, due_date, subject, grade, 'pending', new Date().toISOString()]
     );
 
     res.status(201).json({ message: 'Tarea creada exitosamente', id: taskId });
@@ -651,12 +651,12 @@ app.get('/api/lessons', authenticateToken, async (req, res) => {
 
 app.post('/api/lessons', authenticateToken, async (req, res) => {
   try {
-    const { title, description, content, teacherId, classroomId, subject, grade } = req.body;
+    const { title, description, content, teacher_id, classroom_id, subject, grade } = req.body;
     const lessonId = `lesson-${Date.now()}`;
 
     await dbRun(
       'INSERT INTO lessons (id, title, description, content, teacher_id, classroom_id, subject, grade, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [lessonId, title, description, content, teacherId, classroomId, subject, grade, new Date().toISOString()]
+      [lessonId, title, description, content, teacher_id, classroom_id, subject, grade, new Date().toISOString()]
     );
 
     res.status(201).json({ message: 'Lección creada exitosamente', id: lessonId });

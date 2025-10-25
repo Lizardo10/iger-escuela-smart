@@ -1,0 +1,4 @@
+# Configuración para producción
+VITE_API_URL=https://iger-escuela-smart-backend.onrender.com/api
+VITE_OPENAI_API_KEY=TU_API_KEY_AQUI
+
