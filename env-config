@@ -1,0 +1,10 @@
+# Configuración de OpenAI para IGER Escuela Smart
+# Copia este archivo como .env y configura tu API key
+
+VITE_OPENAI_API_KEY=TU_API_KEY_AQUI
+
+# Instrucciones:
+# 1. Copia este archivo: cp env-config .env
+# 2. O simplemente renombra: mv env-config .env
+# 3. Edita el archivo .env y reemplaza TU_API_KEY_AQUI con tu API key real
+# 4. El sistema funcionará automáticamente
